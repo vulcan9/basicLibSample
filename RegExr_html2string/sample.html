@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<title>sample</title>
+		
+		<script type="text/javascript" src="js/jquery-1.8.3.js"></script>
+		<script type="text/javascript" src="js/tag2string.js"></script>
+		
+		<script type="text/javascript">
+			
+			$(function(){
+				
+				var _content;
+				var _result;
+				
+				var readFile = function (){
+					var files = document.getElementById("files").files;
+					if(files.length < 1){
+						return;
+					}
+					
+					var file = files[0];
+					$("#fileSize").append("* 파일 크기 : " + file.size + " bytes");
+					
+					// 이벤트
+					_content = "";
+					_result = "";
+					
+					var reader = new FileReader();
+					reader.onload = function(event){
+						_content = (event.target.result).toString();
+						//console.log("-->", _content);
+						$("#input").val(_content);
+					};
+					reader.onerror = function(event){
+						var code = event.target.error.code;
+						console.log("-->", event.target.error);
+						alert("Error : ", code);
+					};
+				    reader.readAsText(file, "UTF-8");
+				};
+				
+				var convert = function(){
+					if(!_content){
+						alert("로드된 내용이 없습니다.");
+						return;
+					}
+					
+					//스크립트 태그 분별 (gism)
+					// m modifier가 없으므로 줄바꿈을 없앰
+					var pattern_m = /(\r\n|\n|\r)/gi;
+					_result = _content.replace(pattern_m,"");
+					
+					//pattern = new RegExp("(<(\s+|\s?)(?:script){1}[^<]+?)(.+?)(<(\s+|\s?)\/(\s+|\s?)(?:script){1}(\s+|\s?)>?)", "gism");
+					// s modifier가 없으므로 .을 [\s\S]으로 대체
+					var pattern_s = /(<(\s+|\s?)(?:script){1}[^<]+?)([\s\S]+?)(<(\s+|\s?)\/(\s+|\s?)(?:script){1}(\s+|\s?)>?)/gim;
+					_result = _result.replace(pattern_s, "");
+					
+					// 태그 삭제
+					var pattern_t = /<[^<]+?>/gi;
+					_result = _result.replace(pattern_t, "");
+					
+					// 기타 문자 변환
+					var pattern_space = /&nbsp;/gim;
+					_result = _result.replace(pattern_space, " ");
+					var pattern_space = /&lt;/gim;
+					_result = _result.replace(pattern_space, "<");
+					var pattern_space = /&gt;/gim;
+					_result = _result.replace(pattern_space, ">");
+					
+					$("#output").val(_result);
+				};
+				
+				$("#files").on("change", function(){
+					readFile();
+				});
+				
+				$("#convertButton").click(function(){
+					convert();
+				});
+			});
+			
+		</script>
+	</head>
+
+	<body>
+		<div>
+			<header>
+				<h1>sample</h1>
+			</header>
+		</div>
+		
+		
+			<div id="fileRead">
+				<input type="file" id="files" name="file">
+				
+				<div id="fileSize"></div>
+				
+				<div style="display: inline-block;:left">
+					<textarea id="input" style="width: 600px; height: 500px;" readonly=""></textarea>
+					<input type="button" id="convertButton" style="width: 50px; height: 50px;vertical-align: top" value="변환"/>
+					<textarea id="output" style="width: 600px; height: 500px;"></textarea>
+				</div>
+				
+			</div>
+		
+		
+	</body>
+</html>

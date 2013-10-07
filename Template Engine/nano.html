@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>Test page for nano</title>
+		<!-- include lib -->
+		<script type="text/javascript" src="js/nano.js"></script>
+
+		<!-- test data -->
+		<script type="text/javascript">
+			data = {
+				user : {
+					login : "tomek",
+					first_name : "동일",
+					last_name : "박",
+					account : {
+						status : "active~~",
+						expires_at : "2009-12-31"
+					}
+				}
+			};
+		</script>
+		
+		<!--Templete원형-->
+		<script id="templete" type="text/html">
+			<p>
+				Hello {user.first_name} {user.last_name}! Your account is <strong>{user.account.status}</strong>
+			</p>
+		</script>
+
+	</head>
+	<body>
+		<p>JSon형식의 데이터를 문서 템플릿에 적용시킬 수 있다.</p>
+		
+		<p id="testLayout"></p>
+
+		<script type="text/javascript">
+			// NANO - Template Engine
+			// https://github.com/trix/nano
+			//document.getElementById('testLayout').innerHTML = nano("<p>Hello {user.first_name} {user.last_name}! Your account is <strong>{user.account.status}</strong></p>", data);
+			
+			var templete = document.getElementById('templete').innerHTML;
+			console.log(templete);
+			document.getElementById('testLayout').innerHTML = nano(templete, data);
+			
+			// remove Templete원형
+			//document.getElementById('templete').style.display = "none";
+			var child = document.getElementById('templete');
+			child.parentNode.removeChild(child);
+		</script>
+		
+	</body>
+</html>
